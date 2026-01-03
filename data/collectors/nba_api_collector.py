@@ -111,5 +111,49 @@ class NBADataCollector:
 
     return games.sort_values(by='GAME_DATE')
 
+  def get_all_team_game_stats(self, season: Optional[str] = None) -> pd.DataFrame:
+    """Get detailed game stats for all teams, needed for possession calculation"""
+    season = season or self.season
+    all_stats = []
+    team_list = teams.get_teams()
+
+    for team in team_list:
+      team_id = team['id']
+      try:
+        self._rate_limit(0.7)
+
+        logs = teamgamelogs.TeamGameLogs(team_id_nullable=team_id, season_nullable=season)
+        df = logs.get_data_frames()[0]
+
+        if len(df) > 0:
+          stats_df = pd.DataFrame({
+            'GAME_ID': df['GAME_ID'],
+            'TEAM_ID': df['TEAM_ID'],
+            'team_name': df['TEAM_NAME'],
+            'GAME_DATE': pd.to_datetime(df['GAME_DATE']),
+            'pts': df['PTS'],
+            'fgm': df['FGM'],
+            'fga': df['FGA'],
+            'fg3m': df['FG3M'],
+            'fg3a': df['FG3A'],
+            'ftm': df['FTM'],
+            'fta': df['FTA'],
+            'oreb': df['OREB'],
+            'dreb': df['DREB'],
+            'reb': df['REB'],
+            'ast': df['AST'],
+            'tov': df['TOV'],
+            'stl': df['STL'],
+            'blk': df['BLK']
+          })
+          all_stats.append(stats_df)
+      except Exception as e:
+        print(f"Error fetching team stats for {team_id}: {e}")
+        continue
+
+    if all_stats:
+      return pd.concat(all_stats, ignore_index=True)
+    return pd.DataFrame()
+
 
 

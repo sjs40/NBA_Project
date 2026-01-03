@@ -137,7 +137,7 @@ class CompositeRankings:
       sos_adjusted = win_pct - expected_win_pct + 0.5
 
       rankings_data.append({
-        'team_id': team_id,
+        'TEAM_ID': team_id,
         'team_name': f"{team.get('city', '')} {team.get('nickname', '')}".strip(),
         'abbreviation': team.get('abbreviation', ''),
         'elo': elo,

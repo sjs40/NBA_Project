@@ -169,7 +169,7 @@ class EloRating:
   def get_rankings(self) -> pd.DataFrame:
     """Get current rankings sorted by Elo rating."""
     rankings = pd.DataFrame([
-      {'team_id': team_id, 'elo_rating': rating}
+      {'TEAM_ID': team_id, 'elo_rating': rating}
       for team_id, rating in self.ratings.items()
     ])
     rankings = rankings.sort_values('elo_rating', ascending=False)
